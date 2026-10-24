@@ -29,8 +29,18 @@ jobs:
 
       - name: Installer Android 35
         run: |
-          yes | /usr/local/lib/android/sdk/cmdline-tools/16.0/bin/sdkmanager --licenses || true
-          /usr/local/lib/android/sdk/cmdline-tools/16.0/bin/sdkmanager "platforms;android-35" "build-tools;35.0.0"
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+          ls -la "$ANDROID_HOME" || true
+          ls -la "$ANDROID_HOME/cmdline-tools" || true
+          SDKM=$(find /usr/local/lib/android -name sdkmanager -type f 2>/dev/null | head -n 1)
+          echo "sdkmanager trouve : $SDKM"
+          if [ -z "$SDKM" ]; then
+            echo "ERREUR : sdkmanager introuvable"
+            exit 1
+          fi
+          yes | "$SDKM" --licenses || true
+          "$SDKM" "platforms;android-35" "build-tools;35.0.0"
 
       - name: Installer Gradle 8.11.1
         uses: gradle/actions/setup-gradle@v4
